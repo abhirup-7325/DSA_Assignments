@@ -11,12 +11,24 @@ int BS_FN(TYPE *a, int n, TYPE target) {                                      \
     while (low <= high) {                                                     \
         mid = low + (high - low) / 2;                                         \
                                                                               \
-        if (COMPARE(a[mid], target)) {                                        \
+        if (COMPARE(a[mid], target) == 0) {                                   \
             return mid;                                                       \
         } else if (COMPARE(a[mid], target)) {                                 \
             high = mid - 1;                                                   \
         } else {                                                              \
             low = mid + 1;                                                    \
+        }                                                                     \
+    }                                                                         \
+                                                                              \
+    return -1;                                                                \
+}
+
+
+#define LINEAR_SEARCH(TYPE, LS_FN, COMPARE)                                   \
+int LS_FN(TYPE *a, int n, TYPE target) {                                      \
+    for (int i = 0; i < n; i++) {                                             \
+        if (COMPARE(a[i], target) == 0) {                                     \
+            return i;                                                         \
         }                                                                     \
     }                                                                         \
                                                                               \
@@ -44,9 +56,9 @@ void FN(int *n, TYPE **a, TYPE *target) {                                      \
 }
 
 
-bool cmpInt(int, int);
-bool cmpFloat(float, float);
-bool cmpWords(char *, char *);
+int cmpInt(int, int);
+float cmpFloat(float, float);
+int cmpWords(char *, char *);
 void getIO_Words(int *, char ***, char **);
 
 GET_IO(int, "%d", getIO_int)
@@ -55,6 +67,9 @@ GET_IO(float, "%f", getIO_float);
 BINARY_SEARCH(int, binarySearchInt, cmpInt);
 BINARY_SEARCH(float, binarySearchFloat, cmpFloat);
 BINARY_SEARCH(char*, binarySearchWords, cmpWords);
+LINEAR_SEARCH(int, LinearSearchInt, cmpInt);
+LINEAR_SEARCH(float, LinearSearchFloat, cmpFloat);
+LINEAR_SEARCH(char*, LinearSearchWords, cmpWords);
 
 
 int main() {
@@ -63,14 +78,15 @@ int main() {
     scanf("%d", &response);
 
     int n;
-    int ans;
+    int ansBS, ansLS;
     switch (response) {
         case 1:
             int targetInt;
             int *aInt;
             getIO_int(&n, &aInt, &targetInt);
 
-            ans = binarySearchInt(aInt, n, targetInt);
+            ansBS = binarySearchInt(aInt, n, targetInt);
+            ansLS = LinearSearchInt(aInt, n, targetInt);
 
             free(aInt);
             break;
@@ -81,7 +97,8 @@ int main() {
 
             getIO_float(&n, &aFloat, &targetFloat);
 
-            ans = binarySearchFloat(aFloat, n, targetFloat);
+            ansBS = binarySearchFloat(aFloat, n, targetFloat);
+            ansLS = LinearSearchFloat(aFloat, n, targetFloat);
             free(aFloat);
             break;
 
@@ -91,7 +108,8 @@ int main() {
 
             getIO_Words(&n, &aWords, &targetWords);
 
-            ans = binarySearchWords(aWords, n, targetWords);
+            ansBS = binarySearchWords(aWords, n, targetWords);
+            ansLS = LinearSearchWords(aWords, n, targetWords);
 
             free(targetWords);
             for (int i = 0; i < n; i++) {
@@ -101,10 +119,18 @@ int main() {
             break;
     }
 
-    if (ans == -1) {
+    printf("Using Binary Search: \n");
+    if (ansBS == -1) {
         printf("Answer not found!\n");
     } else {
-        printf("Answer = %d\n", ans);
+        printf("Answer = %d\n", ansBS);
+    }
+
+    printf("Using Linear Search: \n");
+    if (ansLS == -1) {
+        printf("Answer not found!\n");
+    } else {
+        printf("Answer = %d\n", ansLS);
     }
 
     return 0;
@@ -134,19 +160,20 @@ void getIO_Words(int *n, char ***a, char **target) {
 }
 
 
-bool cmpInt(int a, int b) {
-    if (a == b) return true;
-    return false;
+int cmpInt(int a, int b) {
+    return a - b;
 }
 
 
-bool cmpFloat(float a, float b) {
-    if (((a - b > 0) ? (a - b) : (b - a)) < 0.00001) return true;
-    return false;
+float cmpFloat(float a, float b) {
+    if (((a - b > 0) ? (a - b) : (b - a)) < 0.00001) {
+        return 0;
+    }
+    
+    return a - b;
 }
 
 
-bool cmpWords(char *a, char *b) {
-    if (strcmp(a, b) == 0) return true;
-    return false;
+int cmpWords(char *a, char *b) {
+    return strcmp(a, b);
 }
