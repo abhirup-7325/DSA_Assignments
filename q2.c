@@ -8,39 +8,132 @@ the Fibonacci number vs n graph.
 #include <stdlib.h>
 #include <limits.h>
 #include <stdbool.h>
+#include <stdint.h>
+
+
+#include <stdint.h>
+
+#define BINPOW(TYPE)                                            \
+void binpow_##TYPE(TYPE a[2][2], int exp) {                     \
+    if (exp == 1) {                                             \
+        return;                                                 \
+    }                                                           \
+                                                                \
+    TYPE old_a[2][2];                                           \
+    for (int i = 0; i < 2; i++) {                               \
+        for (int j = 0; j < 2; j++) {                           \
+            old_a[i][j] = a[i][j];                              \
+        }                                                       \
+    }                                                           \
+                                                                \
+    binpow_##TYPE(a, exp >> 1);                                 \
+                                                                \
+    TYPE b[2][2];                                               \
+    for (int i = 0; i < 2; i++) {                               \
+        for (int j = 0; j < 2; j++) {                           \
+            b[i][j] = 0;                                        \
+            for (int k = 0; k < 2; k++) {                       \
+                b[i][j] += a[i][k] * a[k][j];                   \
+            }                                                   \
+        }                                                       \
+    }                                                           \
+                                                                \
+    for (int i = 0; i < 2; i++) {                               \
+        for (int j = 0; j < 2; j++) {                           \
+            a[i][j] = b[i][j];                                  \
+        }                                                       \
+    }                                                           \
+                                                                \
+    if (exp % 2 == 1) {                                         \
+        for (int i = 0; i < 2; i++) {                           \
+            for (int j = 0; j < 2; j++) {                       \
+                b[i][j] = 0;                                    \
+                for (int k = 0; k < 2; k++) {                   \
+                    b[i][j] += a[i][k] * old_a[k][j];           \
+                }                                               \
+            }                                                   \
+        }                                                       \
+                                                                \
+        for (int i = 0; i < 2; i++) {                           \
+            for (int j = 0; j < 2; j++) {                       \
+                a[i][j] = b[i][j];                              \
+            }                                                   \
+        }                                                       \
+    }                                                           \
+}
+
+#define FIB_RECURSIVE(TYPE)                                     \
+void fibRecursive_##TYPE(int n) {                               \
+    char text[100] = "The required number is (recursively): ";  \
+    if (n == 1 || n == 2) {                                     \
+        printf("%s 1\n", text);                                 \
+        return;                                                 \
+    }                                                           \
+                                                                \
+    if (n == 3) {                                               \
+        printf("%s %d\n", text, 2);                             \
+        return;                                                 \
+    }                                                           \
+                                                                \
+    TYPE a[2][2] = {                                            \
+        {0, 1},                                                 \
+        {1, 1}                                                  \
+    };                                                          \
+                                                                \
+    TYPE v[2] = {1, 1};  /* F_1, F_2 */                         \
+                                                                \
+    int exp = n - 2;                                            \
+                                                                \
+    binpow_##TYPE(a, exp);                                      \
+                                                                \
+    TYPE val = a[1][0] * v[0] + a[1][1] * v[1];                 \
+    printf("%s %lld \n", text, (long long)val);                 \
+}
+
 
 
 void getIO(int *);
-void fibIterative(int);
-void fibRecursive(int);
+bool fibIterative(int);
+void fibRecursiveInt(int);
+void fibRecursiveLong(int);
 void drawGraph();
 
+BINPOW(int)
+BINPOW(int64_t)
+FIB_RECURSIVE(int)
+FIB_RECURSIVE(int64_t)
 
 int main() {
     int n;
     getIO(&n);
 
-    fibIterative(n);
-    fibRecursive(n);
+    bool isLong = fibIterative(n);
+    
+    if (isLong) {
+        fibRecursive_int64_t(n);
+    } else {
+        fibRecursive_int(n);
+    }
 
     drawGraph();
 }
 
 
-void fibIterative(int n) {
+bool fibIterative(int n) {
     /*
     Implements the dp approach with space optimisations
     */
 
-    char text[100] = "The required number is: ";
+    char text[100] = "The required number is (iteratively): ";
     if (n < 1) {
         printf("Invalid input! Aborting...");
         exit(0);
+        return false;
     }
 
     if (n == 1 || n == 2) {
         printf("%s %d\n", text, 1);
-        return;
+        return false;
     }
 
     int intPrev = 1, intPrev2 = 1, intCur;
@@ -79,12 +172,91 @@ void fibIterative(int n) {
     } else {
         printf("%s %d\n", text, intCur);
     }
+
+    return isLong;
+}
+
+/*
+void binpow(int a[2][2], int exp) {
+    if (exp == 1) {
+        return;
+    }
+
+    int old_a[2][2];
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 2; j++) {
+            old_a[i][j] = a[i][j];
+        }
+    }
+
+    binpow(a, exp >> 1);
+
+    int b[2][2];
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 2; j++) {
+            b[i][j] = 0;
+            for (int k = 0; k < 2; k++) {
+                b[i][j] = a[i][k] * a[k][j];
+            }
+        }
+    }
+
+    for(int i = 0; i < 2; i++) {
+        for (int j = 0; j < 2; j++) {
+            a[i][j] = b[i][j];
+        }
+    }
+
+    if (exp % 2 == 1) {
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 2; j++) {
+                b[i][j] = 0;
+                for (int k = 0; k < 2; k++) {
+                    b[i][j] = a[i][k] * old_a[k][j];
+                }
+            }
+        }
+
+        for(int i = 0; i < 2; i++) {
+            for (int j = 0; j < 2; j++) {
+                a[i][j] = old_a[i][j];
+            }
+        }
+    }
 }
 
 
-void fibRecursive(int n) {
 
-} 
+void fibRecursiveInt(int n) {
+
+    if (n == 1 || n == 2) {
+        printf("1\n");
+    }
+
+    if (n == 3) {
+        printf("%d\n", 2);
+    }
+
+    int a[2][2] = {
+        {0, 1},
+        {1, 1}
+    };
+
+    int v[2] = {1, 1}; // F_1, F_2
+
+    int exp = n - 2;
+
+    binpow(a, exp);
+
+    int val = a[1][0]*v[0] + a[1][1]*v[1];
+    printf("%d\n", val);
+}
+*/
+
+
+void fibRecursiveLong(int n) {
+
+}
 
 
 void drawGraph() {
