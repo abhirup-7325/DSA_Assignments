@@ -260,7 +260,24 @@ void fibRecursiveLong(int n) {
 
 
 void drawGraph() {
+    // upto 10
 
+    int prev = 1, prev2 = 1, cur;
+
+    printf(" 1|  %c\n", '*');
+    printf(" 2|  %c\n", '*');
+
+    for (int i = 3; i <= 10; i++) {
+        cur = prev + prev2;
+        prev2 = prev;
+        prev = cur;
+
+        printf("%2d|  ", i);
+        for (int i = 0; i < cur; i++) {
+            printf("%c", '*');
+        }
+        printf("\n");
+    }
 }
 
 
