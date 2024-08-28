@@ -41,6 +41,7 @@ int main() {
     for (int i = 0; i < N; i++) {
         fprintf(fp, "%lld\n", arr[i]);
     }
+    fclose(fp);
 
     return 0;
 }
