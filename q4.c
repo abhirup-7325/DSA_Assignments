@@ -28,7 +28,7 @@ int main() {
     long long random;
 
     for (long long i = N - 1; i >= 0; i--) {
-        random = ((long long)rand() * RAND_MAX + rand()) % ((long long)(N) + 1);
+        random = ((long long)rand() * RAND_MAX + rand()) % ((long long)(i) + 1);
 
         if (i == random) {
             continue;

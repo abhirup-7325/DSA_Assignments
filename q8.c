@@ -52,6 +52,8 @@ void convertToLargeInteger(char *str, char *result) {
 char* addHalves(char *half1, char *half2, char *result) {
     int len1 = strlen(half1);
     int len2 = strlen(half2);
+
+    printf("%s %s\n", half1, half2);
     int carry = 0, sum;
 
     int maxLen = len1 > len2 ? len1 : len2;
@@ -60,6 +62,8 @@ char* addHalves(char *half1, char *half2, char *result) {
     for (int i = 0; i < maxLen; i++) {
         int digit1 = i < len1 ? half1[len1 - i - 1] - '0' : 0;
         int digit2 = i < len2 ? half2[len2 - i - 1] - '0' : 0;
+
+        printf("%d %d\n", digit1, digit2);
 
         sum = digit1 + digit2 + carry;
         result[maxLen - i] = (sum % 10) + '0';

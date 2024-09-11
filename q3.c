@@ -13,7 +13,7 @@ int BS_FN(TYPE *a, int n, TYPE target) {                                      \
                                                                               \
         if (COMPARE(a[mid], target) == 0) {                                   \
             return mid;                                                       \
-        } else if (COMPARE(a[mid], target)) {                                 \
+        } else if (COMPARE(a[mid], target) > 0) {                             \
             high = mid - 1;                                                   \
         } else {                                                              \
             low = mid + 1;                                                    \
@@ -79,10 +79,14 @@ int main() {
 
     int n;
     int ansBS, ansLS;
+    int targetInt;
+    int *aInt;
+    float targetFloat;
+    float *aFloat;
+    char *targetWords = (char *) malloc(101 * sizeof(char));
+    char **aWords;
     switch (response) {
         case 1:
-            int targetInt;
-            int *aInt;
             getIO_int(&n, &aInt, &targetInt);
 
             ansBS = binarySearchInt(aInt, n, targetInt);
@@ -92,9 +96,6 @@ int main() {
             break;
 
         case 2:
-            float targetFloat;
-            float *aFloat;
-
             getIO_float(&n, &aFloat, &targetFloat);
 
             ansBS = binarySearchFloat(aFloat, n, targetFloat);
@@ -103,9 +104,6 @@ int main() {
             break;
 
         case 3:
-            char *targetWords = (char *) malloc(101 * sizeof(char));
-            char **aWords;
-
             getIO_Words(&n, &aWords, &targetWords);
 
             ansBS = binarySearchWords(aWords, n, targetWords);
