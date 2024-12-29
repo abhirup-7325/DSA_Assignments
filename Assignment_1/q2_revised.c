@@ -60,6 +60,11 @@ void fibIterative(int n) {
 }
 
 
+long long fibRecursive(int n, bool useLong) {
+    
+}
+
+
 void main() {
     int n;
     printf("Enter n: ");
